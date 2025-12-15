@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-JOERN=/home/lzl/bin/joern/joern-cli/joern
+JOERN=/home/lzl/joern/joern-cli/joern
+JOERN_IMPORT=/home/lzl/joern/joern-cli/joern-import
 
 SRC_ROOT=./sources
 OUT_ROOT=./output
@@ -13,20 +14,14 @@ for pkg in "$SRC_ROOT"/*; do
   SRC="$pkg/src"
 
   if [ ! -d "$SRC" ]; then
-    echo "[skip] $NAME (no src)"
     continue
   fi
 
   echo "[Joern] Import $NAME"
 
-  # 1️⃣ 导入 Python 源码（关键）
-  "$JOERN" --import "$SRC" \
-           --language python \
-           --project-name "$NAME"
+  "$JOERN_IMPORT" "$SRC" --language python
 
-  # 2️⃣ 运行查询脚本（函数 & 调用）
-  "$JOERN" --script joern_query.sc \
-           --param pkg="$NAME" \
-           --param out="$OUT_ROOT"
+  PKG="$NAME" OUT="$OUT_ROOT" \
+  "$JOERN" --script joern_query.sc
 
 done
