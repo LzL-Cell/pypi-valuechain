@@ -1,23 +1,22 @@
 #!/bin/bash
 
-JOERN=/home/lzl/bin/joern/joern-cli/joern
-PYSRC2CPG=./frontends/pysrc2cpg/pysrc2cpg.sh
+JOERN=~/bin/joern/joern-cli/joern
+PYSRC2CPG=~/joern/joern-cli/frontends/pysrc2cpg/target/universal/stage/bin/pysrc2cpg
 
-mkdir -p cpgs
+mkdir -p cpgs results
 
 for pkg in sources/*; do
   NAME=$(basename "$pkg")
   SRC="$pkg/src"
-  OUT="cpgs/$NAME.cpg.bin"
+  CPG="cpgs/$NAME.cpg.bin"
 
   if [ -d "$SRC" ]; then
-    echo "[CPG] Building $NAME"
-    $PYSRC2CPG "$SRC" -o "$OUT"
+    echo "[CPG] Generating $NAME"
+    $PYSRC2CPG "$SRC" -o "$CPG"
 
     echo "[Joern] Query $NAME"
-    $JOERN --load "$OUT" <<EOF
-cpg.method.map(m => "$NAME," + m.fullName).l.foreach(println)
-exit
-EOF
+    $JOERN --import "$CPG" --script joern_query.sc \
+      --params pkg="$NAME" > "results/$NAME.csv"
   fi
 done
+
