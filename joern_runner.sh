@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-JOERN=/home/lzl/joern/joern-cli/joern
-JOERN_IMPORT=/home/lzl/joern/joern-cli/joern-import
+JOERN=/home/lzl/bin/joern/joern-cli/joern
 
 SRC_ROOT=./sources
 OUT_ROOT=./output
@@ -19,9 +18,7 @@ for pkg in "$SRC_ROOT"/*; do
 
   echo "[Joern] Import $NAME"
 
-  "$JOERN_IMPORT" "$SRC" --language python
-
-  PKG="$NAME" OUT="$OUT_ROOT" \
-  "$JOERN" --script joern_query.sc
+  SRC="$SRC" NAME="$NAME" OUT="$OUT_ROOT" \
+  "$JOERN" --script joern_repl.sc
 
 done
