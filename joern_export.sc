@@ -1,26 +1,28 @@
-// ===============================
-// Joern script (params-based)
-// ===============================
+import java.io._
 
-// 1. 读取命令行参数
-val codePath = params("code")
-val pkgName  = params("name")
+def writeCsv(path: String, rows: Seq[String]): Unit = {
+  val pw = new PrintWriter(new File(path))
+  rows.foreach(pw.println)
+  pw.close()
+}
 
-println(s"[Joern] codePath = $codePath")
-println(s"[Joern] pkgName  = $pkgName")
+// 当前包名（由 bash 传进来）
+val pkg = project.name
 
-// 2. 导入源码（Python 项目必须指定 language）
-importCode(codePath, pkgName, "python")
+// 1. 函数节点
+val funcs =
+  cpg.method
+    .map(m => s"$pkg,${m.fullName}")
+    .l
 
-// 3. Package -> Function
-cpg.method
-  .map(m => s"$pkgName,${m.fullName}")
-  .l
-  .foreach(println)
+writeCsv(s"data/${pkg}_functions.csv", funcs)
 
-// 4. Function call graph
-cpg.call
-  .nameNot("<operator>.*")
-  .map(c => s"${c.method.fullName},${c.name}")
-  .l
-  .foreach(println)
+// 2. 函数调用边
+val calls =
+  cpg.call
+    .nameNot("<operator>.*")
+    .map(c => s"$pkg,${c.method.fullName},${c.name}")
+    .l
+
+writeCsv(s"data/${pkg}_calls.csv", calls)
+
