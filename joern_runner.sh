@@ -1,24 +1,23 @@
-#!/usr/bin/env bash
-set -e
+#!/bin/bash
 
 JOERN=/home/lzl/bin/joern/joern-cli/joern
+PYSRC2CPG=./frontends/pysrc2cpg/pysrc2cpg.sh
 
-SRC_ROOT=./sources
-OUT_ROOT=./output
+mkdir -p cpgs
 
-mkdir -p "$OUT_ROOT"
-
-for pkg in "$SRC_ROOT"/*; do
+for pkg in sources/*; do
   NAME=$(basename "$pkg")
   SRC="$pkg/src"
+  OUT="cpgs/$NAME.cpg.bin"
 
-  if [ ! -d "$SRC" ]; then
-    continue
+  if [ -d "$SRC" ]; then
+    echo "[CPG] Building $NAME"
+    $PYSRC2CPG "$SRC" -o "$OUT"
+
+    echo "[Joern] Query $NAME"
+    $JOERN --load "$OUT" <<EOF
+cpg.method.map(m => "$NAME," + m.fullName).l.foreach(println)
+exit
+EOF
   fi
-
-  echo "[Joern] Import $NAME"
-
-  SRC="$SRC" NAME="$NAME" OUT="$OUT_ROOT" \
-  "$JOERN" --script joern_repl.sc
-
 done
