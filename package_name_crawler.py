@@ -9,7 +9,7 @@ packages = content.xpath('/html/body/a/text()')
 packages_list = []
     # 增量写入
 for p in packages[:100000]:
-    with open('home/lzl/data/package_name.txt', 'a')) as f:  
+    with open('home/lzl/data/package_name.txt', 'a') as f:  
         res = spider('https://pypi.org/pypi/{p}/json').json()
         info = res.get('info')
         homepage = ''
