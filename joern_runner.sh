@@ -9,7 +9,7 @@ PYCPG_BIN="$HOME/joern/joern-cli/frontends/pysrc2cpg/target/universal/stage/bin/
 
 WORKSPACE="$HOME/example/pypi-valuechain/workspace"
 CPG_DIR="$WORKSPACE/cpgs"
-CSV_DIR="$WORKSPACE/data"   # 改成 data 文件夹
+CSV_DIR="$WORKSPACE/csvs"   
 
 mkdir -p "$WORKSPACE" "$CPG_DIR" "$CSV_DIR"
 
